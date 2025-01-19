@@ -41,7 +41,7 @@ def tab_2():
     if convert_choice != []:
         if convert_choice == ["Longueurs"]:
             choice_cm = st.multiselect(label="CM", key='choice',
-            options=["MM", "CM", "Metres", "Pieds", "Pouces", ], on_change=call_back, max_selections=None)
+            options=["MM", "CM", "Metres", "Pieds", "Pouces", ], on_change=converter.call_back, max_selections=None)
 
 with tab1:
     st.header("Creating List")
