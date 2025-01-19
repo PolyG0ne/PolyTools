@@ -1,56 +1,53 @@
 import streamlit as st
-from openai import OpenAI
+from fonctions import converter
 
-# Show title and description.
-st.title("💬 Chatbot")
-st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
-)
+# initialisation Session State
+if 'list_convert' not in st.session_state:
+    st.session_state['list_convert'] = None
+if 'choice' not in st.session_state:
+    st.session_state['choice'] = None
 
-# Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
-else:
+st.write(st.session_state) # affiche SessionState pour Debug ...
+tab1, tab2, tab3 = st.tabs(["List Tools", "Convertion", "Notes"])
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
+def tab_1():
+    
+    st.title("Deux liste en Une ")
+    with st.form("list_form", clear_on_submit=True):
+        list_1 = st.text_input(label="Première Liste:", value="", key='list1', max_chars=None, placeholder="Liste séparé par \" , \" - Exemple : Cravate, Marteau, Broche")
+        list_2 = st.text_input(label="Deuxième Liste:", value="", key='list2', max_chars=None, placeholder="Liste séparé par \" , \" - Exemple : Chat, Chien, Oiseau", on_change=None)
+        
+        submit= st.form_submit_button(label="Envoyé", on_click=None, icon=":material/send:")
+        
+    if submit:
+        list_1_split = list_1.split(",")
+        list_2_split = list_2.split(",")
+        
+        list_jointed = []
+        count = 0
+        try:
+            for item in list_1_split:
+                list_jointed.append(f"{item}{list_2_split[count]}")
+                count += 1
+        except IndexError:
+            st.error("Même nombre de virgule pour les 2 listes - LA LISTE N'EST PAS CONFORME")
+        st.code(list_jointed, language="None", line_numbers=False)
 
-    # Create a session state variable to store the chat messages. This ensures that the
-    # messages persist across reruns.
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+def tab_2():
+    convert_choice = st.pills(label="Types",
+            options=option_types,
+            key='list_convert', on_change=call_back,) #max_selections=1)
 
-    # Display the existing chat messages via `st.chat_message`.
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    if convert_choice != []:
+        if convert_choice == ["Longueurs"]:
+            choice_cm = st.multiselect(label="CM", key='choice',
+            options=["MM", "CM", "Metres", "Pieds", "Pouces", ], on_change=call_back, max_selections=None)
 
-    # Create a chat input field to allow the user to enter a message. This will display
-    # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
+with tab1:
+    st.header("Creating List")
+    tab_1()
 
-        # Store and display the current prompt.
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-        )
-
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+with tab2:
+    st.header("Conversion")
+    tab_2()
+    
