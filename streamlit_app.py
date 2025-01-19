@@ -35,7 +35,7 @@ def tab_1():
 
 def tab_2():
     convert_choice = st.pills(label="Types",
-            options=option_types,
+            options=converter.option_types,
             key='list_convert', on_change=call_back,) #max_selections=1)
 
     if convert_choice != []:
