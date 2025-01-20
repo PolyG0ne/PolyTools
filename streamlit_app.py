@@ -11,7 +11,7 @@ tab1, tab2, tab3 = st.tabs(["List Tools", "Convertion", "Notes"])
 
 def tab_1(): 
     
-    st.title("Deux liste en Une ")
+    st.header("Deux liste en Une ")
     with st.form("list_form", clear_on_submit=True):
         list_1 = st.text_input(label="Première Liste:", value="", key='list1', max_chars=None, placeholder="Liste séparé par \" , \" - Exemple : Cravate, Marteau, Broche")
         list_2 = st.text_input(label="Deuxième Liste:", value="", key='list2', max_chars=None, placeholder="Liste séparé par \" , \" - Exemple : Chat, Chien, Oiseau", on_change=None)
@@ -33,12 +33,12 @@ def tab_1():
         st.code(list_jointed, language="None", line_numbers=False)
 
 def tab_2():
-    st.
+    st.header("Tool de conversion")
     pass
 
 
 with tab1:
-    st.header("Creating List")
+    st.title("Creating List")
     tab_1()
 
 with tab2:
