@@ -1,5 +1,5 @@
 import streamlit as st
-st.page_link("Home.py", label="DashBoard", icon=":material/dashboard:")
+st.page_link("Home.py", label="Retour", icon=":material/dashboard:")
 #st.write(st.session_state) # affiche SessionState pour Debug ...
 tab1, tab2, tab3 = st.tabs(["List Tools", "Convertion", "Notes"])
 

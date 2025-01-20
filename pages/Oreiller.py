@@ -6,7 +6,7 @@ from traduction import traduction# fichier traduction.py qui incluts les traduct
 
 date_today = datetime.datetime.now()
 formatted_now = date_today.strftime("%Y-%m-%d | %H:%M")
-st.page_link("Home.py", label="DashBoard", icon=":material/dashboard:")
+st.page_link("Home.py", label="Retour", icon=":material/dashboard:")
 st.title(traduction.dict_lang[st.session_state['lang_']]['titre-oreiller'])
 
 # Charger les données depuis le fichier JSON
