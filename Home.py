@@ -13,4 +13,3 @@ st.title("Bienvenu sur le site PolyTools !")
 
 st.write("Des outils pour tous les besoins au bout des doigts")
 
-st.page_link("Home.py", label="DashBoard", icon=":material/dashboard:")

@@ -1,9 +1,5 @@
 import streamlit as st
-
-# initialisation Session State
-if 'lang_' not in st.session_state:
-    st.session_state['lang_'] = "FR"
-
+st.page_link("Home.py", label="DashBoard", icon=":material/dashboard:")
 #st.write(st.session_state) # affiche SessionState pour Debug ...
 tab1, tab2, tab3 = st.tabs(["List Tools", "Convertion", "Notes"])
 
