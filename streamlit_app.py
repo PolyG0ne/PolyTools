@@ -33,17 +33,8 @@ def tab_1():
         st.code(list_jointed, language="None", line_numbers=False)
 
 def tab_2():
-
-    def call_back():
-        st.write(st.session_state.list_convert)
-
-    option_param = []
-    convert_choice = []
-    option_types = ["Longueurs", "Poids", "Distances", "Liquides", "Température"]
-    option_types1 = ["Truc Chose", "Patente Chouette", "Patente a goss aussi", "Saparlipopette", "Bettrave"]
-    convert_choice = st.pills(label="Types", options=option_types, key='list_convert', on_change=call_back,) #max_selections=1)
-
-
+    st.
+    pass
 
 
 with tab1:
@@ -51,6 +42,6 @@ with tab1:
     tab_1()
 
 with tab2:
-    st.header("Conversion")
+    st.title("Conversion")
     tab_2()
     
