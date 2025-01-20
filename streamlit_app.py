@@ -34,7 +34,7 @@ def tab_1():
 
 def tab_2():
     convert_choice = st.pills(label="Types",
-            options=converter.option_types,
+            options=option_types,
             key='list_convert', on_change=call_back,) #max_selections=1)
 
     option_types = ["Longueurs", "Poids", "Distances", "Liquides", "Température"]
