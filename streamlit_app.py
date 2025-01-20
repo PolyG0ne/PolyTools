@@ -1,8 +1,6 @@
 import streamlit as st
 from fonctions import converter
 
-
-
 # initialisation Session State
 if 'list_convert' not in st.session_state:
     st.session_state['list_convert'] = None
@@ -38,12 +36,16 @@ def tab_1():
 def tab_2():
     convert_choice = st.pills(label="Types",
             options=converter.option_types,
-            key='list_convert', on_change=converter.call_back,) #max_selections=1)
+            key='list_convert', on_change=call_back,) #max_selections=1)
 
-    if convert_choice != []:
-        if convert_choice == ["Longueurs"]:
-            choice_cm = st.multiselect(label="CM", key='choice',
-            options=["MM", "CM", "Metres", "Pieds", "Pouces", ], on_change=converter.call_back, max_selections=None)
+    option_types = ["Longueurs", "Poids", "Distances", "Liquides", "Température"]
+    option_types1 = ["Truc Chose", "Patente Chouette", "Patente a goss aussi", "Saparlipopette", "Bettrave"]
+
+    option_param = []
+    convert_choice = []
+
+    def call_back():
+        st.write(st.session_state.list_convert)
 
 with tab1:
     st.header("Creating List")
