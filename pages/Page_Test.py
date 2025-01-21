@@ -15,5 +15,6 @@ def named(name):
 name_record = st.button("Save",on_click=named, args=[name])
 st.write(st.session_state.name)
 
+
 if name_record:
     st.write("le if du bouton est True")
