@@ -95,7 +95,7 @@ def main():
         st.markdown("""
         ### Instructions :
         - Entrez soit des codes postaux (un par ligne) ou des noms de villes (une par ligne)
-        - Format des codes postaux accepté : G5H 1V7 ou G5H1V7
+        - Format des codes postaux accepté : G0J 1J0 ou G0J1J0
         """)
 
         # Créer deux colonnes
@@ -107,7 +107,7 @@ def main():
             postal_codes_input = st.text_area(
                 "Entrez les codes postaux (un par ligne)",
                 height=150,
-                help="Example: G5H 1V7",
+                help="Example: G0J 1J0",
                 key="postal_codes"
             )
 
