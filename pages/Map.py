@@ -29,7 +29,7 @@ def get_coordinates(postal_code):
     for attempt in range(max_retries):
         try:
             # Ajouter 'Quebec, Canada' pour plus de précision
-            location = geocode(f"{postal_code}") #, Quebec, Canada")
+            location = geocode(f"{postal_code}, Quebec, Canada")
             if location:
                 return location.latitude, location.longitude
             break
