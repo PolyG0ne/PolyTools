@@ -10,98 +10,139 @@ import sys
 def is_valid_quebec_postal_code(code):
     """Vérifie si le code postal est au format québécois valide."""
     pattern = r'^[A-Z]\d[A-Z]\s?\d[A-Z]\d$'
-    # Accepte le format avec ou sans espace
     return bool(re.match(pattern, code.upper()))
 
 @st.cache_data
-def get_coordinates(postal_code):
+def get_coordinates_from_postal_code(postal_code):
     """Obtenir les coordonnées à partir d'un code postal."""
     geolocator = Nominatim(user_agent="my_quebec_app")
     geocode = RateLimiter(geolocator.geocode, min_delay_seconds=2)
     
-    # Standardiser le format (ajouter espace si absent)
     postal_code = postal_code.upper()
     if len(postal_code) == 6:
         postal_code = f"{postal_code[:3]} {postal_code[3:]}"
-        st.info(postal_code)
         
     max_retries = 3
     for attempt in range(max_retries):
         try:
-            # Ajouter 'Quebec, Canada' pour plus de précision
             location = geocode(f"{postal_code}, Quebec, Canada")
             if location:
-                return location.latitude, location.longitude
+                return location.latitude, location.longitude, location.address
             break
         except Exception as e:
             if attempt == max_retries - 1:
                 st.error(f"Erreur lors de la géolocalisation du code postal {postal_code}: {e}")
             continue
-    return None, None
+    return None, None, None
 
-def create_map(postal_codes):
-    """Créer une carte avec des marqueurs pour chaque code postal."""
+@st.cache_data
+def get_coordinates_from_city(city):
+    """Obtenir les coordonnées à partir d'un nom de ville."""
+    geolocator = Nominatim(user_agent="my_quebec_app")
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=2)
+    
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            location = geocode(f"{city}, Quebec, Canada")
+            if location:
+                return location.latitude, location.longitude, location.address
+            break
+        except Exception as e:
+            if attempt == max_retries - 1:
+                st.error(f"Erreur lors de la géolocalisation de la ville {city}: {e}")
+            continue
+    return None, None, None
+
+def create_map_from_locations(locations_data):
+    """Créer une carte avec des marqueurs pour chaque localisation."""
     # Centrer la carte sur le Québec
     m = folium.Map(location=[46.8139, -71.2080], zoom_start=6)
     
     progress_bar = st.progress(0)
-    processed_codes = set()  # Pour éviter les doublons
+    processed_locations = set()  # Pour éviter les doublons
     
-    for i, code in enumerate(postal_codes):
-        if not code in processed_codes:
-            processed_codes.add(code)
+    for i, (identifier, location_type) in enumerate(locations_data):
+        if not identifier in processed_locations:
+            processed_locations.add(identifier)
             
-            if not is_valid_quebec_postal_code(code):
-                st.warning(f"Code postal invalide ignoré : {code}")
-                continue
+            if location_type == 'postal_code':
+                if not is_valid_quebec_postal_code(identifier):
+                    st.warning(f"Code postal invalide ignoré : {identifier}")
+                    continue
+                coords = get_coordinates_from_postal_code(identifier)
+            else:  # city
+                coords = get_coordinates_from_city(identifier)
                 
-            coords = get_coordinates(code)
             if coords[0] and coords[1]:
                 folium.Marker(
-                    coords,
-                    popup=f"Code postal: {code}",
-                    icon=folium.Icon(color='red', icon='info-sign')
+                    [coords[0], coords[1]],
+                    popup=f"{'Code postal' if location_type == 'postal_code' else 'Ville'}: {identifier}<br>Adresse: {coords[2]}",
+                    icon=folium.Icon(color='red' if location_type == 'postal_code' else 'blue', 
+                                   icon='info-sign')
                 ).add_to(m)
             else:
-                st.warning(f"Impossible de trouver les coordonnées pour : {code}")
+                st.warning(f"Impossible de trouver les coordonnées pour : {identifier}")
         
-        progress_bar.progress((i + 1) / len(postal_codes))
+        progress_bar.progress((i + 1) / len(locations_data))
     
     return m
 
 def main():
     try:
-        st.title("Visualisation des Codes Postaux du Québec")
+        st.title("Visualisation des Codes Postaux et Villes du Québec")
         
         st.markdown("""
         ### Instructions :
-        - Entrez les codes postaux québécois (un par ligne)
-        - Format accepté : G5H 1V7 ou G5H1V7
+        - Entrez soit des codes postaux (un par ligne) ou des noms de villes (une par ligne)
+        - Format des codes postaux accepté : G5H 1V7 ou G5H1V7
         """)
 
-        # Saisie des codes postaux
-        postal_codes_input = st.text_area(
-            "Entrez les codes postaux (un par ligne)",
-            height=150,
-            help="Example: G5H 1V7"
-        )
+        # Créer deux colonnes
+        col1, col2 = st.columns(2)
 
-        if postal_codes_input:
-            # Convertir l'entrée en liste et nettoyer les données
-            postal_codes = [code.strip() for code in postal_codes_input.split('\n') 
+        # Colonne pour les codes postaux
+        with col1:
+            st.subheader("Recherche par codes postaux")
+            postal_codes_input = st.text_area(
+                "Entrez les codes postaux (un par ligne)",
+                height=150,
+                help="Example: G5H 1V7",
+                key="postal_codes"
+            )
+
+        # Colonne pour les villes
+        with col2:
+            st.subheader("Recherche par villes")
+            cities_input = st.text_area(
+                "Entrez les noms des villes (une par ligne)",
+                height=150,
+                help="Example: Montréal",
+                key="cities"
+            )
+
+        if st.button("Afficher la carte"):
+            # Traiter les codes postaux
+            postal_codes = [(code.strip(), 'postal_code') for code in postal_codes_input.split('\n') 
                           if code.strip()]
+            
+            # Traiter les villes
+            cities = [(city.strip(), 'city') for city in cities_input.split('\n') 
+                     if city.strip()]
+            
+            # Combiner les deux listes
+            locations_data = postal_codes + cities
 
-            if st.button("Afficher la carte"):
-                if not postal_codes:
-                    st.error("Veuillez entrer au moins un code postal valide.")
-                else:
-                    with st.spinner("Création de la carte en cours..."):
-                        # Créer et afficher la carte
-                        m = create_map(postal_codes)
-                        folium_static(m)
-                        
-                        # Afficher les statistiques
-                        st.success(f"Traitement terminé! {len(postal_codes)} codes postaux traités.")
+            if not locations_data:
+                st.error("Veuillez entrer au moins un code postal ou une ville.")
+            else:
+                with st.spinner("Création de la carte en cours..."):
+                    # Créer et afficher la carte
+                    m = create_map_from_locations(locations_data)
+                    folium_static(m)
+                    
+                    # Afficher les statistiques
+                    st.success(f"Traitement terminé! {len(locations_data)} localisations traitées.")
 
     except Exception as e:
         st.error(f"Une erreur inattendue s'est produite: {str(e)}")
