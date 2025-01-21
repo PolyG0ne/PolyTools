@@ -23,7 +23,7 @@ def get_coordinates(postal_code):
     postal_code = postal_code.upper()
     if len(postal_code) == 6:
         postal_code = f"{postal_code[:3]} {postal_code[3:]}"
-        st.write(postal_code)
+        st.info(postal_code)
         
     max_retries = 3
     for attempt in range(max_retries):
