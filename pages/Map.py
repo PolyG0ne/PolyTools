@@ -17,12 +17,13 @@ def is_valid_quebec_postal_code(code):
 def get_coordinates(postal_code):
     """Obtenir les coordonnées à partir d'un code postal."""
     geolocator = Nominatim(user_agent="my_quebec_app")
-    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=2)
     
     # Standardiser le format (ajouter espace si absent)
     postal_code = postal_code.upper()
     if len(postal_code) == 6:
         postal_code = f"{postal_code[:3]} {postal_code[3:]}"
+        st.write(postal_code)
         
     max_retries = 3
     for attempt in range(max_retries):
