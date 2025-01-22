@@ -11,7 +11,8 @@ def is_valid_quebec_postal_code(code):
     """Vérifie si le code postal est au format québécois valide."""
     pattern = r'^[A-Z]\d[A-Z]\s?\d[A-Z]\d$'
     return bool(re.match(pattern, code.upper()))
-
+# ajouter une liste ou bd SQLite pour avoir sa propre 
+# source de geocode, sinon chercher par le reste
 @st.cache_data
 def get_coordinates_from_postal_code(postal_code):
     """Obtenir les coordonnées à partir d'un code postal."""
