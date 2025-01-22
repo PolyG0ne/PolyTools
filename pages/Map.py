@@ -12,7 +12,7 @@ import csv
 POSTAL_CODE_PATTERN = r'^[A-Z]\d[A-Z]\s?\d[A-Z]\d$'
 CSV_FILE_PATH = Path('data/CanadianPostalCodes202403.csv')
 
-@st.cache_data(ttl=3600)  # Cache for 1 hour
+@st.cache_data(ttl=3600, allow_output_mutation=True)  # Cache for 1 hour
 def load_postal_codes():
     """Load postal codes from CSV file"""
     try:
@@ -32,7 +32,7 @@ def is_valid_postal_code(code):
         return False
     return bool(re.match(POSTAL_CODE_PATTERN, code.upper()))
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=3600, allow_output_mutation=True)
 def get_coordinates_from_postal_code(postal_code, locations):
     """Obtenir les coordonnées à partir d'un code postal."""
     try:
@@ -44,7 +44,7 @@ def get_coordinates_from_postal_code(postal_code, locations):
         st.warning(f"Erreur de format dans les données pour le code postal {postal_code}: {e}")
         return None, None, None
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=3600, allow_output_mutation=True)
 def get_coordinates_from_city(city):
     """Obtenir les coordonnées à partir d'un nom de ville."""
     geolocator = Nominatim(user_agent="quebec_postal_app")
@@ -69,26 +69,31 @@ def create_map_from_locations(locations_data, postal_codes_data):
         for i, (identifier, location_type) in enumerate(locations_data):
             if identifier not in processed_locations:
                 processed_locations.add(identifier)
-                
-                if location_type == 'postal_code':
-                    if not is_valid_postal_code(identifier):
-                        st.warning(f"Code postal invalide ignoré : {identifier}")
-                        continue
-                    coords = get_coordinates_from_postal_code(identifier, postal_codes_data)
-                else:
-                    coords = get_coordinates_from_city(identifier)
-                    
+                coords = get_coordinates(identifier, location_type, postal_codes_data)
                 if all(coords):
-                    folium.Marker(
-                        [coords[0], coords[1]],
-                        popup=f"{'Code postal' if location_type == 'postal_code' else 'Ville'}: {identifier}<br>Adresse: {coords[2]}",
-                        icon=folium.Icon(color='red' if location_type == 'postal_code' else 'blue', 
-                                       icon='info-sign')
-                    ).add_to(m)
-                
+                    add_marker_to_map(m, coords, identifier, location_type)
             progress_bar.progress((i + 1) / len(locations_data))
     
     return m
+
+def get_coordinates(identifier, location_type, postal_codes_data):
+    """Obtenir les coordonnées en fonction du type de localisation."""
+    if location_type == 'postal_code':
+        if not is_valid_postal_code(identifier):
+            st.warning(f"Code postal invalide ignoré : {identifier}")
+            return None, None, None
+        return get_coordinates_from_postal_code(identifier, postal_codes_data)
+    else:
+        return get_coordinates_from_city(identifier)
+
+def add_marker_to_map(m, coords, identifier, location_type):
+    """Ajouter un marqueur à la carte."""
+    folium.Marker(
+        [coords[0], coords[1]],
+        popup=f"{'Code postal' if location_type == 'postal_code' else 'Ville'}: {identifier}<br>Adresse: {coords[2]}",
+        icon=folium.Icon(color='red' if location_type == 'postal_code' else 'blue', 
+                         icon='info-sign')
+    ).add_to(m)
 
 def main():
     st.set_page_config(page_title="Visualisation Codes Postaux Québec", layout="wide")
