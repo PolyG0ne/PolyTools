@@ -11,20 +11,25 @@ import csv
 # Constants
 POSTAL_CODE_PATTERN = r'^[A-Z]\d[A-Z]\s?\d[A-Z]\d$'
 CSV_FILE_PATH = Path('data/CanadianPostalCodes202403.csv')
+INITIAL_LOCATION = [46.8139, -71.2080]
 
-@st.cache_data(ttl=3600, allow_output_mutation=True)  # Cache for 1 hour
+@st.cache_data(ttl=3600)  # Cache for 1 hour
 def load_postal_codes():
     """Load postal codes from CSV file"""
+    f = None
     try:
-        with open(CSV_FILE_PATH, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            return list(reader)
+        f = open(CSV_FILE_PATH, 'r', encoding='utf-8')
+        reader = csv.reader(f)
+        return list(reader)
     except FileNotFoundError:
         st.error(f"Le fichier {CSV_FILE_PATH} n'a pas été trouvé.")
         return []
     except Exception as e:
         st.error(f"Erreur lors de la lecture du fichier CSV: {e}")
         return []
+    finally:
+        if f is not None:
+            f.close()
 
 def is_valid_postal_code(code):
     """Vérifie si le code postal est au format valide."""
@@ -32,7 +37,7 @@ def is_valid_postal_code(code):
         return False
     return bool(re.match(POSTAL_CODE_PATTERN, code.upper()))
 
-@st.cache_data(ttl=3600, allow_output_mutation=True)
+@st.cache_data(ttl=3600)
 def get_coordinates_from_postal_code(postal_code, locations):
     """Obtenir les coordonnées à partir d'un code postal."""
     try:
@@ -44,7 +49,7 @@ def get_coordinates_from_postal_code(postal_code, locations):
         st.warning(f"Erreur de format dans les données pour le code postal {postal_code}: {e}")
         return None, None, None
 
-@st.cache_data(ttl=3600, allow_output_mutation=True)
+@st.cache_data(ttl=3600)
 def get_coordinates_from_city(city):
     """Obtenir les coordonnées à partir d'un nom de ville."""
     geolocator = Nominatim(user_agent="quebec_postal_app")
@@ -56,7 +61,7 @@ def get_coordinates_from_city(city):
             return location.latitude, location.longitude, location.address
     except Exception as e:
         st.warning(f"Erreur de géolocalisation pour {city}: {e}")
-    return None, None, None
+    m = folium.Map(location=INITIAL_LOCATION, zoom_start=6)
 
 def create_map_from_locations(locations_data, postal_codes_data):
     """Créer une carte avec des marqueurs pour chaque localisation."""
@@ -132,7 +137,23 @@ def main():
             key="postal_codes"
         )
 
-    if st.button("Afficher la carte"):
+        if st.button("Afficher la carte"):
+            locations_data = get_locations_data(postal_codes_input, cities_input)
+            
+            if not locations_data:
+                st.error("Veuillez entrer au moins un code postal ou une ville.")
+                return
+    
+            try:
+                with st.spinner("Création de la carte en cours..."):
+                    m = create_map_from_locations(locations_data, postal_codes_data)
+                    folium_static(m)
+                    st.success(f"Traitement terminé! {len(locations_data)} localisations traitées.")
+            except Exception as e:
+                st.error(f"Une erreur est survenue lors de la création de la carte: {e}")
+    
+    def get_locations_data(postal_codes_input, cities_input):
+        """Obtenir les données de localisation à partir des entrées utilisateur."""
         postal_codes = [(code.strip().upper(), 'postal_code') 
                        for code in postal_codes_input.split('\n') 
                        if code.strip()]
@@ -141,19 +162,7 @@ def main():
                   for city in cities_input.split('\n') 
                   if city.strip()]
         
-        locations_data = postal_codes + cities
-
-        if not locations_data:
-            st.error("Veuillez entrer au moins un code postal ou une ville.")
-            return
-
-        try:
-            with st.spinner("Création de la carte en cours..."):
-                m = create_map_from_locations(locations_data, postal_codes_data)
-                folium_static(m)
-                st.success(f"Traitement terminé! {len(locations_data)} localisations traitées.")
-        except Exception as e:
-            st.error(f"Une erreur est survenue lors de la création de la carte: {e}")
+        return postal_codes + cities
 
 if __name__ == "__main__":
     main()
