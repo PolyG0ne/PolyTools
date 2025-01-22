@@ -5,7 +5,6 @@ import pandas as pd
 from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
 import re
-import sys
 
 def is_valid_quebec_postal_code(code):
     """Vérifie si le code postal est au format québécois valide."""
@@ -103,7 +102,7 @@ def main():
         col1, col2 = st.columns(2)
 
         # Colonne pour les codes postaux
-        with col1:
+        with col2:
             st.subheader("Recherche par codes postaux")
             postal_codes_input = st.text_area(
                 "Entrez les codes postaux (un par ligne)",
@@ -113,7 +112,7 @@ def main():
             )
 
         # Colonne pour les villes
-        with col2:
+        with col1:
             st.subheader("Recherche par villes")
             cities_input = st.text_area(
                 "Entrez les noms des villes (une par ligne)",
