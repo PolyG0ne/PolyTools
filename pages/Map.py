@@ -1,7 +1,6 @@
 import streamlit as st
 import folium
 from streamlit_folium import folium_static
-import pandas as pd
 from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
 import re
@@ -62,7 +61,7 @@ def get_coordinates_from_city(city):
     except Exception as e:
         st.warning(f"Erreur de géolocalisation pour {city}: {e}")
     m = folium.Map(location=INITIAL_LOCATION, zoom_start=6)
-
+    pass  # m is not used, so we can remove this line
 def create_map_from_locations(locations_data, postal_codes_data):
     """Créer une carte avec des marqueurs pour chaque localisation."""
     m = folium.Map(location=[46.8139, -71.2080], zoom_start=6)
@@ -138,19 +137,20 @@ def main():
         )
 
         if st.button("Afficher la carte"):
-            locations_data = get_locations_data(postal_codes_input, cities_input)
-            
-            if not locations_data:
-                st.error("Veuillez entrer au moins un code postal ou une ville.")
-                return
-    
-            try:
-                with st.spinner("Création de la carte en cours..."):
-                    m = create_map_from_locations(locations_data, postal_codes_data)
-                    folium_static(m)
-                    st.success(f"Traitement terminé! {len(locations_data)} localisations traitées.")
-            except Exception as e:
-                st.error(f"Une erreur est survenue lors de la création de la carte: {e}")
+            if st.button("Afficher la carte"):
+                locations_data = get_locations_data(postal_codes_input, cities_input)
+                
+                if not locations_data:
+                    st.error("Veuillez entrer au moins un code postal ou une ville.")
+                    return
+        
+                try:
+                    with st.spinner("Création de la carte en cours..."):
+                        m = create_map_from_locations(locations_data, postal_codes_data)
+                        folium_static(m)
+                        st.success(f"Traitement terminé! {len(locations_data)} localisations traitées.")
+                except Exception as e:
+                    st.error(f"Une erreur est survenue lors de la création de la carte: {e}")
     
     def get_locations_data(postal_codes_input, cities_input):
         """Obtenir les données de localisation à partir des entrées utilisateur."""
@@ -163,6 +163,5 @@ def main():
                   if city.strip()]
         
         return postal_codes + cities
-
 if __name__ == "__main__":
     main()
