@@ -84,6 +84,9 @@ def create_map(locations_data, postal_codes_data):
     return m
 
 def main():
+    if "text_content" not in st.session_state:
+        st.session_state.text_content = ""
+
     st.set_page_config(page_title="Visualisation Codes Postaux et Villes", layout="wide")
     st.title("Visualisation sur Folium")
     
@@ -99,8 +102,13 @@ def main():
     if not postal_codes_data:
         return
 
+    if st.button("Effacer"):
+        st.session_state.text_content = ""
+        st.rerun()
+
     locations_input = st.text_area(
         "Codes postaux ou villes (un par ligne)",
+        value="" if "locations" not in st.session_state else st.session_state.locations,
         height=150,
         help="Exemple:\nG0J 1J0\nMontréal\nQuébec",
         key="locations"
@@ -120,6 +128,8 @@ def main():
                 st.success(f"{len(locations)} localisations recherchées.")
         except Exception as e:
             st.error(f"Erreur lors de la création de la carte: {e}")
+    
+
 
 if __name__ == "__main__":
     main()
