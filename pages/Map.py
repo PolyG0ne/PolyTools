@@ -102,7 +102,7 @@ def main():
     if not postal_codes_data:
         return
 
-    if st.button("Effacer"):
+    if st.button("Effacer", type="primary"):
         st.session_state.text_content = ""
         st.rerun()
 
@@ -114,7 +114,7 @@ def main():
         key="locations"
     )
 
-    if st.button("Afficher la carte"):
+    if st.button("Afficher la carte", type="secondary"):
         locations = [loc.strip() for loc in locations_input.split('\n') if loc.strip()]
         
         if not locations:
