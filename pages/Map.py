@@ -8,9 +8,7 @@ import csv
 
 POSTAL_CODE_PATTERN = r'^[A-Z]\d[A-Z]\s?\d[A-Z]\d$'
 CSV_FILE_PATH = Path('data/CanadianPostalCodes202403.csv')
-INITIAL_LOCATION = [46.8139, -71.2080]
-
-
+INITIAL_LOCATION = [48.45207841277754, -68.52372144956752]
 
 @st.cache_data(ttl=3600)
 def load_postal_codes():
@@ -26,35 +24,9 @@ def is_valid_postal_code(code):
         return False
     return bool(re.match(POSTAL_CODE_PATTERN, code.upper()))
 
-# def get_coordinates_from_data(identifier, postal_codes_data):
-#     # Remove spaces and convert to uppercase for postal code comparison
-#     cleaned_identifier = identifier.upper().replace(' ', '')
-    
-#     # First try as postal code
-#     if is_valid_postal_code(cleaned_identifier):
-#         for location in postal_codes_data:
-#             if location['POSTAL_CODE'].replace(' ', '') == cleaned_identifier:
-#                 return {
-#                     'lat': float(location['LATITUDE']),
-#                     'lon': float(location['LONGITUDE']),
-#                     'type': 'postal_code',
-#                     'address': f"{location['CITY']}, {location['PROVINCE_ABBR']}"
-#                 }
-    
-#     # Then try as city
-#     for location in postal_codes_data:
-#         if location['CITY'].upper() == identifier.upper():
-#             return {
-#                 'lat': float(location['LATITUDE']),
-#                 'lon': float(location['LONGITUDE']),
-#                 'type': 'city',
-#                 'address': f"{location['CITY']}, {location['PROVINCE_ABBR']}"
-#             }
-    
-#     return None
 def get_coordinates_from_data(identifier, postal_codes_data):
     identifier = identifier.strip()
-    
+
     # Try coordinates format first
     if ',' in identifier:
         try:
@@ -97,7 +69,7 @@ def get_coordinates_from_data(identifier, postal_codes_data):
     return None
 
 def create_map(locations_data, postal_codes_data):
-    m = folium.Map(location=INITIAL_LOCATION, zoom_start=6)
+    m = folium.Map(location=INITIAL_LOCATION, zoom_start=10)
     
     for identifier in locations_data:
         location = get_coordinates_from_data(identifier, postal_codes_data)
@@ -144,7 +116,7 @@ def main():
         try:
             with st.spinner("Création de la carte..."):
                 m = create_map(locations, postal_codes_data)
-                folium_static(m)
+                folium_static(m, width=1000, height=500)
                 st.success(f"{len(locations)} localisations recherchées.")
         except Exception as e:
             st.error(f"Erreur lors de la création de la carte: {e}")
