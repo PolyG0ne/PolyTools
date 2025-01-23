@@ -85,7 +85,7 @@ def create_map(locations_data, postal_codes_data):
 
 def main():
     st.set_page_config(page_title="Visualisation Codes Postaux et Villes", layout="wide")
-    st.title("Visualisation des Codes Postaux et Villes du Québec")
+    st.title("Visualisation sur Folium")
     
     st.markdown("""
     ### Instructions:
