@@ -125,7 +125,7 @@ def main():
 
    locations_input = st.text_area(
        "Codes postaux ou villes (un par ligne)", 
-       value=st.session_state.text_content,
+       value="" if "locations" not in st.session_state else st.session_state.locations,
        height=150,
        help="Exemple:\nG0J 1J0\nMontréal\nQuébec",
        key="locations_input"

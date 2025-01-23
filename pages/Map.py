@@ -87,7 +87,6 @@ def main():
     if "text_content" not in st.session_state:
         st.session_state.text_content = ""
 
-    st.set_page_config(page_title="Visualisation Codes Postaux et Villes", layout="wide")
     st.title("Visualisation sur Folium")
     
     st.markdown("""
