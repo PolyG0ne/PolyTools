@@ -1,7 +1,6 @@
 import streamlit as st
 import folium
 from streamlit_folium import folium_static
-from geopy.geocoders import Nominatim
 import re
 from pathlib import Path
 import csv
