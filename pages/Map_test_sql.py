@@ -128,7 +128,7 @@ def main():
        value="" if "locations" not in st.session_state else st.session_state.locations,
        height=150,
        help="Exemple:\nG0J 1J0\nMontréal\nQuébec",
-       key="locations_input"
+       key="locations"
    )
 
    if st.button("Afficher la carte"):
