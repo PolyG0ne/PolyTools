@@ -90,7 +90,7 @@ def main():
     st.markdown("""
     ### Instructions:
     - Entrez des codes postaux, des noms de villes ou des coordonnées (un par ligne)
-    - Format de code postal accepté: G0J 1J0 ou G0J1J0
+    - Format de code postal accepté: G0J 1J0,  G0J1J0, g0j 1j0, g0j1j0
     - Format de ville accepté: Nom de la ville (ex: Montréal, Quebec)
     - Format de coordonnées accepté: Latitude, Longitude (ex: 46.8139, -71.2080 ou 48.45207841277754, -68.52372144956752) ..
     """)
