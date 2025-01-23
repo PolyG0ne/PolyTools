@@ -102,42 +102,50 @@ def create_map(locations_data, postal_codes_data):
     return m
 
 def main():
-    st.set_page_config(page_title="Visualisation Codes Postaux et Villes", layout="wide")
-    st.title("Visualisation sur Folium")
-    
-    st.markdown("""
-    ### Instructions:
-    - Entrez des codes postaux, des noms de villes ou des coordonnées (un par ligne)
-    - Format de code postal accepté: G0J 1J0, G0J1J0, g0j 1j0, g0j1j0
-    - Format de ville accepté: Nom de la ville (ex: Montréal, Quebec)
-    - Format de coordonnées accepté: Latitude, Longitude (ex: 48.4498, -68.5289 / 48.44988218305047, -68.52894936844488)
-    """)
+   if "text_content" not in st.session_state:
+       st.session_state.text_content = ""
 
-    postal_codes_data = load_postal_codes()
-    if not postal_codes_data:
-        return
+   st.set_page_config(page_title="Visualisation Codes Postaux et Villes", layout="wide")
+   st.title("Visualisation sur Folium")
+   
+   st.markdown("""
+   ### Instructions:
+   - Entrez des codes postaux, des noms de villes ou des coordonnées (un par ligne)
+   - Format de code postal accepté: G0J 1J0, G0J1J0, g0j 1j0, g0j1j0
+   - Format de ville accepté: Nom de la ville (ex: Montréal, Quebec)
+   - Format de coordonnées accepté: Latitude, Longitude (ex: 48.4498, -68.5289 / 48.44988218305047, -68.52894936844488)
+   """)
 
-    locations_input = st.text_area(
-        "Codes postaux ou villes (un par ligne)",
-        height=150,
-        help="Exemple:\nG0J 1J0\nMontréal\nQuébec",
-        key="locations"
-    )
+   postal_codes_data = load_postal_codes()
+   if not postal_codes_data:
+       return
 
-    if st.button("Afficher la carte"):
-        locations = [loc.strip() for loc in locations_input.split('\n') if loc.strip()]
-        
-        if not locations:
-            st.error("Veuillez entrer au moins un code postal ou une ville valide.")
-            return
+   if st.button("Effacer", type="primary"):
+       st.session_state.text_content = ""
+       st.rerun()
 
-        try:
-            with st.spinner("Création de la carte..."):
-                m = create_map(locations, postal_codes_data)
-                folium_static(m, width=1000, height=500)
-                st.success(f"{len(locations)} localisations recherchées.")
-        except Exception as e:
-            st.error(f"Erreur lors de la création de la carte: {e}")
+   locations_input = st.text_area(
+       "Codes postaux ou villes (un par ligne)", 
+       value=st.session_state.text_content,
+       height=150,
+       help="Exemple:\nG0J 1J0\nMontréal\nQuébec",
+       key="locations_input"
+   )
+
+   if st.button("Afficher la carte"):
+       locations = [loc.strip() for loc in locations_input.split('\n') if loc.strip()]
+       
+       if not locations:
+           st.error("Veuillez entrer au moins un code postal ou une ville valide.")
+           return
+
+       try:
+           with st.spinner("Création de la carte..."):
+               m = create_map(locations, postal_codes_data)
+               folium_static(m, width=1000, height=500)
+               st.success(f"{len(locations)} localisations recherchées.")
+       except Exception as e:
+           st.error(f"Erreur lors de la création de la carte: {e}")
 
 if __name__ == "__main__":
-    main()
+   main()
