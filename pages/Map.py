@@ -69,7 +69,7 @@ def get_coordinates_from_data(identifier, postal_codes_data):
     return None
 
 def create_map(locations_data, postal_codes_data):
-    m = folium.Map(location=INITIAL_LOCATION, zoom_start=10)
+    m = folium.Map(location=INITIAL_LOCATION, zoom_start=7)
     
     for identifier in locations_data:
         location = get_coordinates_from_data(identifier, postal_codes_data)
