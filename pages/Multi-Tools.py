@@ -1,7 +1,13 @@
 import streamlit as st
+import random
+import pandas as pd
+
+VALID_LETTERS = ['A', 'B', 'C', 'E', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'X', 'Y']
+
+
 st.page_link("Home.py", label="Retour", icon=":material/home:")
 #st.write(st.session_state) # affiche SessionState pour Debug ...
-tab1, tab2, tab3 = st.tabs(["List Tools", "Convertion", "Notes"])
+tab1, tab2, tab3 = st.tabs(["List Tools", "Convertion", "Postal_Gen"])
 
 def tab_1(): 
     
@@ -29,6 +35,53 @@ def tab_1():
 def tab_2():
     st.header("Tool de conversion")
     pass
+    
+def generate_canada_postal():
+    """Generate a valid Canadian postal code format: A1A 1A1"""
+    return f"{random.choice(VALID_LETTERS)}{random.randint(0, 9)}{random.choice(VALID_LETTERS)} {random.randint(0, 9)}{random.choice(VALID_LETTERS)}{random.randint(0, 9)}"
+
+def tab_3():
+    st.header("Générateur de code postal")
+    
+    df = None
+    
+    with st.form("postal_code", clear_on_submit=True):
+        x_postal_code = st.number_input(
+            label="Nombre de génération",
+            min_value=1,
+            step=1,
+            key='gen_postal_code',
+            value=1
+        )
+        num_columns = st.number_input(
+            label="Nombre de colonnes",
+            min_value=1,
+            max_value=10,
+            value=1,
+            step=1
+        )
+        submit = st.form_submit_button(label="Générer")
+        
+        if submit:
+            postal_codes = [generate_canada_postal() for _ in range(x_postal_code)]
+            rows_needed = (x_postal_code + num_columns - 1) // num_columns
+            
+            matrix = []
+            for i in range(rows_needed):
+                row = []
+                for j in range(num_columns):
+                    index = i + j * rows_needed
+                    if index < len(postal_codes):
+                        row.append(postal_codes[index])
+                    else:
+                        row.append("")
+                matrix.append(row)
+            
+            df = pd.DataFrame(matrix, columns=[f"Colonne {i+1}" for i in range(num_columns)])
+    
+    if df is not None:
+        st.dataframe(df, height=1000)  # Ajustez la hauteur selon vos besoins
+        st.write(f"Nombre total de codes postaux générés : {len(df) * len(df.columns)}")
 
 with tab1:
     st.title("Creating List")
@@ -37,4 +90,7 @@ with tab1:
 with tab2:
     st.title("Conversion")
     tab_2()
-    
+
+with tab3:
+    st.title("Postal Code Generator")
+    tab_3()
