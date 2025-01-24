@@ -193,16 +193,16 @@ class StreamlitApp:
             return
 
         st.set_page_config(
-            page_title="Postal Code Visualization",
+            page_title="Map visualisation",
             layout="wide"
         )
 
         st.title("Postal Code Visualization")
         
         locations_input = st.text_area(
-            "Enter postal codes, cities, or coordinates (one per line)",
+            "Entrez une liste de codes postaux, villes ou coordonnées (un par ligne):",
             height=150,
-            help="Format: Postal Code (G0J 1J0) or City (Montreal) or Coordinates (45.5017, -73.5673)"
+            help="Format: Code postal (G0J 1J0) ou Ville (Montréal) ou Coordonnées (45.5017, -73.5673)"
         )
 
         if st.button("Show Map", type="primary"):
