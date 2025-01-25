@@ -1,118 +1,106 @@
 import streamlit as st
-import sqlite3
-import pandas as pd
-from pathlib import Path
+import numpy as np
+import plotly.graph_objects as go
+from math import radians, degrees, cos, sin, tan, pi
 
-
-st.title("Warning --Test page--")
-# Configuration du chemin
-CSV_FILE_PATH = Path('data/CanadianPostalCodes202403.csv')
-DB_FILE_PATH = Path('data/postal_codes2.db')
-
-def create_database():
-    # Création de la base de données SQLite
-    conn = sqlite3.connect(DB_FILE_PATH)
-    cursor = conn.cursor()
+def calculate_reflection(mirror_pos, mirror_angle, light_source):
+    # Conversion en radians
+    theta = radians(mirror_angle)
     
-    # Création de la table
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS postal_codes (
-        postal_code TEXT PRIMARY KEY,
-        city TEXT,
-        province_abbr TEXT,
-        time_zone INTEGER,
-        latitude REAL,
-        longitude REAL
+    # Vecteur normal au miroir
+    normal = np.array([cos(theta + pi/2), sin(theta + pi/2)])
+    
+    # Vecteur incident
+    incident = light_source - mirror_pos
+    incident = incident / np.linalg.norm(incident)
+    
+    # Calcul du vecteur réfléchi: R = I - 2(I·N)N
+    reflection = incident - 2 * np.dot(incident, normal) * normal
+    
+    return normal, incident, reflection
+
+def create_figure(mirror_pos, mirror_angle, light_source, scale=100):
+    # Calcul des vecteurs
+    normal, incident, reflection = calculate_reflection(mirror_pos, mirror_angle, light_source)
+    
+    # Création du miroir
+    theta = radians(mirror_angle)
+    mirror_start = mirror_pos + np.array([-cos(theta), -sin(theta)]) * scale
+    mirror_end = mirror_pos + np.array([cos(theta), sin(theta)]) * scale
+    
+    # Création de la figure Plotly
+    fig = go.Figure()
+    
+    # Miroir
+    fig.add_trace(go.Scatter(x=[mirror_start[0], mirror_end[0]], 
+                            y=[mirror_start[1], mirror_end[1]],
+                            mode='lines',
+                            name='Miroir',
+                            line=dict(color='black', width=2)))
+    
+    # Rayon incident
+    fig.add_trace(go.Scatter(x=[light_source[0], mirror_pos[0]], 
+                            y=[light_source[1], mirror_pos[1]],
+                            mode='lines+text',
+                            name='Rayon incident',
+                            line=dict(color='red', width=2)))
+    
+    # Rayon réfléchi
+    reflected_end = mirror_pos + reflection * scale
+    fig.add_trace(go.Scatter(x=[mirror_pos[0], reflected_end[0]], 
+                            y=[mirror_pos[1], reflected_end[1]],
+                            mode='lines',
+                            name='Rayon réfléchi',
+                            line=dict(color='blue', width=2)))
+    
+    # Normale
+    normal_end = mirror_pos + normal * (scale/2)
+    fig.add_trace(go.Scatter(x=[mirror_pos[0], normal_end[0]], 
+                            y=[mirror_pos[1], normal_end[1]],
+                            mode='lines',
+                            name='Normale',
+                            line=dict(color='green', dash='dash', width=2)))
+    
+    # Configuration de la mise en page
+    fig.update_layout(
+        title="Simulation de la Réflexion Spéculaire",
+        xaxis_title="X",
+        yaxis_title="Y",
+        showlegend=True,
+        width=800,
+        height=600,
+        xaxis=dict(range=[-scale, scale], scaleanchor="y", scaleratio=1),
+        yaxis=dict(range=[-scale, scale])
     )
-    ''')
     
-    # Lecture du CSV
-    df = pd.read_csv(CSV_FILE_PATH)
-    
-    # Insertion des données
-    df.to_sql('postal_codes', conn, if_exists='replace', index=False)
-    
-    conn.commit()
-    conn.close()
+    return fig
 
-def search_postal_code(postal_code):
-    conn = sqlite3.connect(DB_FILE_PATH)
-    cursor = conn.cursor()
-    
-    # Recherche exacte
-    cursor.execute('''
-    SELECT * FROM postal_codes 
-    WHERE postal_code = ?
-    ''', (postal_code.upper(),))
-    
-    result = cursor.fetchone()
-    conn.close()
-    
-    if result:
-        return {
-            'postal_code': result[0],
-            'city': result[1],
-            'province': result[2],
-            'time_zone': result[3],
-            'latitude': result[4],
-            'longitude': result[5]
-        }
-    return None
-
-# Interface Streamlit
 def main():
-    st.title("Recherche de Codes Postaux Canadiens")
+    st.title("Simulation de la Réflexion Spéculaire")
     
-    # Création de la base de données si elle n'existe pas
-    if not DB_FILE_PATH.exists():
-        create_database()
+    # Paramètres du miroir
+    st.sidebar.header("Paramètres")
+    mirror_angle = st.sidebar.slider("Angle du miroir (degrés)", -90, 90, 0)
+    source_x = st.sidebar.slider("Position X source lumineuse", -80, 80, -50)
+    source_y = st.sidebar.slider("Position Y source lumineuse", -80, 80, 50)
     
-    postal_code = st.text_input("Entrez un code postal:")
+    # Position du miroir fixe au centre
+    mirror_pos = np.array([0, 0])
+    light_source = np.array([source_x, source_y])
     
-    if st.button("Rechercher"):
-        if postal_code:
-            result = search_postal_code(postal_code)
-            if result:
-                st.write("Résultats:")
-                for key, value in result.items():
-                    st.write(f"{key}: {value}")
-            else:
-                st.error("Code postal non trouvé")
-
-st.write("""
-H2X 1Y6
-M5V 2T6
-V6B 4N7
-T2P 1J9
-K1P 5H9
-B3J 3R7
-R3C 0G1
-S7K 5B7
-E1C 4M7
-Y1A 6L6
-
-Rimouski
-Kingston
-Victoria
-Fredericton
-Charlottetown
-Red Deer
-Thunder Bay
-Trois-Rivières
-St. John
-Prince George
-
-48.45207841277754, -68.52372144956752 
-44.22976710972037, -76.48587831226758
-48.42841714646363, -123.36545935255743
-45.96336671345439, -66.64062673091888
-46.23824771454619, -63.13110351562500
-52.26815737376817, -113.81196260452271
-48.38233955556270, -89.24472808837891
-46.34692761055676, -72.54150390625000
-47.56170075451973, -52.71240234375000
-53.91728101547621, -122.74658203125000
-""")
+    # Calcul et affichage
+    fig = create_figure(mirror_pos, mirror_angle, light_source)
+    st.plotly_chart(fig)
+    
+    # Calcul des angles
+    normal, incident, reflection = calculate_reflection(mirror_pos, mirror_angle, light_source)
+    angle_incident = degrees(np.arccos(np.dot(-incident, normal)))
+    angle_reflection = degrees(np.arccos(np.dot(reflection, normal)))
+    
+    # Affichage des informations
+    st.sidebar.markdown("### Informations")
+    st.sidebar.write(f"Angle d'incidence: {angle_incident:.1f}°")
+    st.sidebar.write(f"Angle de réflexion: {angle_reflection:.1f}°")
 
 if __name__ == "__main__":
     main()
