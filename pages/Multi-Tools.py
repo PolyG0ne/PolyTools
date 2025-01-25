@@ -124,12 +124,23 @@ def tab_4():
         st.write("L'audio Morse fonction a venir ...")
     st.divider()
     st.caption("Guide Morse:")
-    df = pd.DataFrame(MORSE_CODE.items(), columns=['Caractère', 'Code Morse'])
-    st.dataframe(df)
+    num_columns = 5
+    morse_items = list(MORSE_CODE.items())
+    rows_needed = (len(morse_items) + num_columns - 1) // num_columns
 
-with tab1:
-    st.title("Creating List")
-    tab_1()
+    matrix = []
+    for i in range(rows_needed):
+        row = []
+        for j in range(num_columns):
+            index = i + j * rows_needed
+            if index < len(morse_items):
+                row.append(morse_items[index])
+            else:
+                row.append(("", ""))
+        matrix.append(row)
+
+    df = pd.DataFrame(matrix, columns=[f"Colonne {i+1}" for i in range(num_columns)])
+    st.dataframe(df.style.set_properties(**{'width': '100px'}), width=600, hide_index=True)
 
 with tab2:
     st.title("Conversion")
