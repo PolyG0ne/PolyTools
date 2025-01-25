@@ -4,10 +4,23 @@ import pandas as pd
 
 VALID_LETTERS = ['A', 'B', 'C', 'E', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'X', 'Y']
 
+# Dict Morse
+MORSE_CODE = {
+    'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+    'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+    'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+    'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+    'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
+    '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+    '8': '---..', '9': '----.', ' ': ' '
+}
+
+# Dict Morse to text
+REVERSE_MORSE = {value: key for key, value in MORSE_CODE.items()}
 
 st.page_link("Home.py", label="Retour", icon=":material/home:")
 #st.write(st.session_state) # affiche SessionState pour Debug ...
-tab1, tab2, tab3 = st.tabs(["List Tools", "Convertion", "Postal_Gen"])
+tab1, tab2, tab3, tab4= st.tabs(["List Tools", "Convertion", "Postal_Gen", "Morse"])
 
 def tab_1(): 
     
@@ -80,8 +93,38 @@ def tab_3():
             df = pd.DataFrame(matrix, columns=[f"Colonne {i+1}" for i in range(num_columns)])
     
     if df is not None:
-        st.dataframe(df, height=1000)  # Ajustez la hauteur selon vos besoins
+        st.dataframe(df, height=1000)  # Ajust as needed
         st.write(f"Nombre total de codes postaux générés : {len(df) * len(df.columns)}")
+def text_to_morse(text):
+    return ' '.join(MORSE_CODE.get(char.upper(), char) for char in text)
+
+def morse_to_text(morse):
+    try:
+        return ''.join(REVERSE_MORSE.get(code, '') for code in morse.split())
+    except:
+        return "Format Morse invalide"
+
+def tab_4():
+    st.header("Convertisseur Morse")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Texte vers Morse")
+        text_input = st.text_input("Entrez votre texte:", key="text_to_morse")
+        if text_input:
+            st.code(text_to_morse(text_input))
+            
+    with col2:
+        st.subheader("Morse vers Texte")
+        morse_input = st.text_input("Entrez le code Morse (séparé par des espaces):", key="morse_to_text")
+        if morse_input:
+            st.code(morse_to_text(morse_input))
+            
+    st.divider()
+    st.caption("Guide Morse:")
+    df = pd.DataFrame(MORSE_CODE.items(), columns=['Caractère', 'Code Morse'])
+    st.dataframe(df)
 
 with tab1:
     st.title("Creating List")
@@ -94,3 +137,7 @@ with tab2:
 with tab3:
     st.title("Postal Code Generator")
     tab_3()
+
+with tab4:
+    st.title("Morse Converter")
+    tab_4()
