@@ -4,18 +4,18 @@ import plotly.graph_objects as go
 from math import radians, degrees, cos, sin, tan, pi
 
 def calculate_reflection(mirror_pos, mirror_angle, light_source):
-    # Conversion en radians
     theta = radians(mirror_angle)
     
-    # Vecteur normal au miroir
-    normal = np.array([cos(theta + pi/2), sin(theta + pi/2)])
+    # Vecteur normal au miroir (perpendiculaire à la surface)
+    normal = np.array([sin(theta), -cos(theta)])
     
-    # Vecteur incident
+    # Vecteur incident normalisé
     incident = light_source - mirror_pos
     incident = incident / np.linalg.norm(incident)
     
-    # Calcul du vecteur réfléchi: R = I - 2(I·N)N
-    reflection = incident - 2 * np.dot(incident, normal) * normal
+    # Calcul du vecteur réfléchi avec la formule correcte
+    dot_product = np.dot(incident, normal)
+    reflection = incident - 2 * dot_product * normal
     
     return normal, incident, reflection
 
