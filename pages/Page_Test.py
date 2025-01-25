@@ -14,7 +14,7 @@ def calculate_reflection(incident_point, incident_angle, mirror_angle=0, ray_len
     y_reflected = incident_point[1] + ray_length * reflection[1]
     return (x_incident, y_incident), (x_reflected, y_reflected)
 
-st.title("Advanced Reflection Simulator")
+st.title("Reflection Mirroir")
 
 with st.sidebar:
     st.header("Configuration")
