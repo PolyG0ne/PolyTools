@@ -212,6 +212,7 @@ class StreamlitApp:
                     try:
                         m = self.map_service.create_map(locations)
                         folium_static(m, width=800, height=600)
+                        st.caption('data source: https://codes-postaux.cybo.com/ ')
                     except Exception as e:
                         st.error(f"Error creating map: {e}")
             else:

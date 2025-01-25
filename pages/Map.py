@@ -123,6 +123,7 @@ def main():
             with st.spinner("Création de la carte..."):
                 m = create_map(locations, postal_codes_data)
                 folium_static(m, width=1000, height=500)
+                st.caption('data source: https://codes-postaux.cybo.com/ ')
                 st.success(f"{len(locations)} localisations recherchées.")
         except Exception as e:
             st.error(f"Erreur lors de la création de la carte: {e}")
