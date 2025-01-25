@@ -1,10 +1,6 @@
 import streamlit as st
 import random
 import pandas as pd
-import base64
-import urllib.parse
-import html
-
 
 VALID_LETTERS = ['A', 'B', 'C', 'E', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'X', 'Y']
 
@@ -27,7 +23,6 @@ st.page_link("Home.py", label="Retour", icon=":material/home:")
 tab1, tab2, tab3= st.tabs(["List Tools", "Convertion", "Postal_Gen"])
 
 def tab_1(): 
-    
     st.header("Deux liste en Une ")
     with st.form("list_form", clear_on_submit=True):
         list_1 = st.text_input(label="Première Liste:", value="", key='list1', max_chars=None, placeholder="Liste séparé par \" , \" - Exemple : Cravate, Marteau, Broche")
@@ -201,14 +196,12 @@ def tab_2():
             st.subheader("Texte vers Code")
             text_input = st.text_input("Entrez votre texte:", key="text_to_code")
             encoding = st.selectbox("Sélectionnez l'encodage:", 
-                                  ['Base64', 'ROT13', 'URL', 'HTML'], key="encoding")
+                                  ['Base64', 'URL', 'HTML'], key="encoding")
             
             if text_input:
                 if encoding == 'Base64':
                     import base64
                     encoded = base64.b64encode(text_input.encode()).decode()
-                elif encoding == 'ROT13':
-                    encoded = text_input.encode('rot13')
                 elif encoding == 'URL':
                     import urllib.parse
                     encoded = urllib.parse.quote(text_input)
@@ -228,8 +221,7 @@ def tab_2():
                     if decoding == 'Base64':
                         decoded = base64.b64decode(code_input).decode()
                     elif decoding == 'ROT13':
-                        import codecs
-                        decoded = codecs.decode(code_input, 'rot_13')
+                        decoded = int(code_input.decode('rot13')) # fix this
                     elif decoding == 'URL':
                         decoded = urllib.parse.unquote(code_input)
                     elif decoding == 'HTML':
@@ -305,6 +297,10 @@ def morse_to_text(morse):
     except:
         return "Format Morse invalide"
 
+with tab1:
+    st.title("List Tools")
+    tab_1()
+    
 with tab2:
     st.title("Conversion")
     tab_2()
