@@ -120,7 +120,8 @@ def tab_4():
         morse_input = st.text_input("Entrez le code Morse (séparé par des espaces):", key="morse_to_text")
         if morse_input:
             st.code(morse_to_text(morse_input))
-            
+        st.button("Audio Morse")
+        st.write("L'audio Morse fonction a venir ...")
     st.divider()
     st.caption("Guide Morse:")
     df = pd.DataFrame(MORSE_CODE.items(), columns=['Caractère', 'Code Morse'])
