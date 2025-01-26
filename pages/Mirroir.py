@@ -1,5 +1,5 @@
 import streamlit as st
-from pages.fonctions.config_miroir import ReflectionSimulator
+from fonctions.config_miroir import ReflectionSimulator
 
 if __name__ == "__main__":
     st.set_page_config(
