@@ -86,7 +86,7 @@ class ReflectionSimulator:
     def plot_normal_3d(self, ax, incident_point, mirror_angle_xy, mirror_angle_z, view='top'):
         normal_length = 0.5
         if view == 'top':
-            normal_angle = np.radians(mirror_angle_xy + 90)
+            normal_angle = np.radians(mirror_angle_xy)
             normal_x = [incident_point[0], incident_point[0] + normal_length * np.cos(normal_angle)]
             normal_y = [incident_point[1], incident_point[1] + normal_length * np.sin(normal_angle)]
             ax.plot(normal_x, normal_y, 'g:', linewidth=1)
@@ -139,16 +139,16 @@ class ReflectionSimulator:
         
         if plane == 'xy':
             # Vue du dessus (plan XY)
-            mirror_x = [point[0] - mirror_length * np.cos(mirror_rad),
-                    point[0] + mirror_length * np.cos(mirror_rad)]
-            mirror_y = [point[1] - mirror_length * np.sin(mirror_rad),
-                    point[1] + mirror_length * np.sin(mirror_rad)]
+            mirror_x = [point[0] - mirror_length * np.cos(mirror_rad + np.pi/2),
+                    point[0] + mirror_length * np.cos(mirror_rad + np.pi/2)]
+            mirror_y = [point[1] - mirror_length * np.sin(mirror_rad + np.pi/2),
+                    point[1] + mirror_length * np.sin(mirror_rad + np.pi/2)]
         else:
             # Vue de côté (plan XZ)
-            mirror_x = [point[0] - mirror_length * np.cos(mirror_rad),
-                    point[0] + mirror_length * np.cos(mirror_rad)]
-            mirror_y = [point[2] - mirror_length * np.sin(mirror_rad),
-                    point[2] + mirror_length * np.sin(mirror_rad)]
+            mirror_x = [point[0] - mirror_length * np.cos(mirror_rad + np.pi/2),
+                    point[0] + mirror_length * np.cos(mirror_rad + np.pi/2)]
+            mirror_y = [point[2] - mirror_length * np.sin(mirror_rad + np.pi/2),
+                    point[2] + mirror_length * np.sin(mirror_rad + np.pi/2)]
         
         ax.plot(mirror_x, mirror_y, 'k-', linewidth=2)
 
