@@ -109,12 +109,13 @@ class ReflectionSimulator:
         self._plot_rays(ax1, incident_point, incident_end, reflected_end, plane='xy')
         self._plot_rays(ax2, incident_point, incident_end, reflected_end, plane='xz')
         
-        self._plot_mirror(ax1, incident_point, params.angle_xy)
-        self._plot_mirror(ax2, (incident_point[0], 0, incident_point[2]), params.angle_z)
+        # Passage du paramètre plane pour chaque vue
+        self._plot_mirror(ax1, incident_point, params.angle_xy, plane='xy')
+        self._plot_mirror(ax2, (incident_point[0], 0, incident_point[2]), params.angle_z, plane='xz')
         
         self.plot_normal_3d(ax1, incident_point, params.angle_xy, params.angle_z, 'top')
         self.plot_normal_3d(ax2, (incident_point[0], 0, incident_point[2]), 
-                           params.angle_xy, params.angle_z, 'side')
+                        params.angle_xy, params.angle_z, 'side')
 
     def _plot_rays(self, ax, incident_point, incident_end, reflected_end, plane='xy'):
         idx1, idx2 = (0, 1) if plane == 'xy' else (0, 2)
@@ -132,13 +133,23 @@ class ReflectionSimulator:
             ax.plot([incident_point[idx1], reflected_end[idx1]], 
                    [incident_point[idx2], reflected_end[idx2]], 'r--')
 
-    def _plot_mirror(self, ax, point, angle):
+    def _plot_mirror(self, ax, point, angle, plane='xy'):
         mirror_length = 1
         mirror_rad = np.radians(angle)
-        mirror_x = [point[0] - mirror_length * np.cos(mirror_rad),
-                   point[0] + mirror_length * np.cos(mirror_rad)]
-        mirror_y = [point[1] - mirror_length * np.sin(mirror_rad),
-                   point[1] + mirror_length * np.sin(mirror_rad)]
+        
+        if plane == 'xy':
+            # Vue du dessus (plan XY)
+            mirror_x = [point[0] - mirror_length * np.cos(mirror_rad),
+                    point[0] + mirror_length * np.cos(mirror_rad)]
+            mirror_y = [point[1] - mirror_length * np.sin(mirror_rad),
+                    point[1] + mirror_length * np.sin(mirror_rad)]
+        else:
+            # Vue de côté (plan XZ)
+            mirror_x = [point[0] - mirror_length * np.cos(mirror_rad),
+                    point[0] + mirror_length * np.cos(mirror_rad)]
+            mirror_y = [point[2] - mirror_length * np.sin(mirror_rad),
+                    point[2] + mirror_length * np.sin(mirror_rad)]
+        
         ax.plot(mirror_x, mirror_y, 'k-', linewidth=2)
 
     def setup_axes(self, ax1, ax2):
