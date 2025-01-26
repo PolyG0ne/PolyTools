@@ -50,9 +50,8 @@ def show_inventaire_form():
     data = load_data()
     
     if not data.empty:
-        st.dataframe(data)  # Utilisation de st.dataframe au lieu de st.write
-    
-    # Formulaire toujours affiché, pas seulement quand data est vide
+        st.dataframe(data)  
+
     with st.form(key="inventaire_form"):
         id = st.number_input("ID", min_value=0, step=1)
         name = st.text_input("Nom")
@@ -79,7 +78,7 @@ def show_inventaire_form():
                 ''', (id, name, product_number, number_of_boxes, quantity_in_box, total_quantity, stored_emplacement))
                 conn.commit()
                 st.success("Données ajoutées avec succès.")
-                st.rerun()  # Rafraîchit la page pour montrer les nouvelles données
+                st.rerun() 
             except sqlite3.IntegrityError:
                 st.error("Erreur: ID déjà existant.")
             except Exception as e:
@@ -121,14 +120,10 @@ def show_update_form():
                     conn.close()
 
 def main():
-    # Initialisation de la base de données
     init_database()
-    
     tab_1, tab_2 = st.tabs(["Inventaire", "Mise à jour"])
-    
     with tab_1:
         show_inventaire_form()
-    
     with tab_2:
         show_update_form()
 
