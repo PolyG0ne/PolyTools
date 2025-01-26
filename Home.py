@@ -14,3 +14,6 @@ st.title("Bienvenu sur le site PolyTools !")
 st.write("Des outils pour tous les besoins au bout des doigts")
 
 st.session_state
+
+st.balloons()
+st.snow()
