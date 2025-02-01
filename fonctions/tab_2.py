@@ -23,10 +23,11 @@ def morse_to_text(morse):
         return ''.join(REVERSE_MORSE.get(code, '') for code in morse.split())
     except:
         return "Format Morse invalide"
-    
+
+
 def tab_2():
     st.header("Tool de conversion")
-    conversion_choice = st.selectbox("Choix de la conversion", ['Morse', 'Alpha', 'Binaire', 'Signe', 'Code'])
+    conversion_choice = st.selectbox("Choix de la conversion", ['Morse', 'Alpha', 'Binaire', 'Signe', 'Code', 'Poids', 'Longueur', 'Température', 'Volume', 'Vitesse', 'Pression', 'Energie', 'Surface', 'Angle'], key="conversion_choice")
    
     ### Morse ###
     if conversion_choice == 'Morse':
@@ -68,7 +69,7 @@ def tab_2():
         st.dataframe(df.style.set_properties(**{'width': '100px'}), width=600, hide_index=True)
     
     ### Alpha ###
-    elif conversion_choice == 'Alpha':
+    if conversion_choice == 'Alpha':
         st.header("Convertisseur Alphabet Phonétique")
         
         PHONETIC_DICT = {
@@ -107,7 +108,7 @@ def tab_2():
         st.dataframe(phonetic_df, width=300)
     
     ### Binaire ###
-    elif conversion_choice == 'Binaire':
+    if conversion_choice == 'Binaire':
         st.header("Convertisseur Binaire")
         
         col1, col2 = st.columns(2)
@@ -130,7 +131,7 @@ def tab_2():
                     st.error("Format binaire invalide")
     
     ### Signe ###
-    elif conversion_choice == 'Signe':
+    if conversion_choice == 'Signe':
         st.header("Convertisseur Signe")
         
         SIGN_DICT = {
@@ -167,7 +168,7 @@ def tab_2():
         st.dataframe(sign_df, width=300)
     
     ### Code ###
-    elif conversion_choice == 'Code':
+    if conversion_choice == 'Code':
         st.header("Convertisseur Code")
         
         col1, col2 = st.columns(2)
@@ -209,6 +210,63 @@ def tab_2():
                     st.code(decoded)
                 except Exception as e:
                     st.error(f"Erreur de décodage: {str(e)}")
+
+    ### Volume ###
+    dict_convert = {
+            'Litre':1,
+            'Gallon US':0.264172,
+            'Millilitre':1000,
+            'Once liquide':33.814,
+            'Pinte':2.11338,
+            'Quart':1.05669,
+            'Tasse':4.22675,
+            'Cuillère à soupe':67.628,
+            'Cuillère à thé':202.884
+        }
+
+    def converting():#, volume_input, convert_choice):
+        #output = dict_convert[choice]
+        #volume_output = volume_input * dict_convert.values[volume_input_choice] * dict_convert.values[convert_choice]
+        return 
     
-            else:
-                st.write("Choix invalide")
+    if conversion_choice == 'Volume':
+        st.header("Convertisseur de Volume")
+        st.write("Le volume est une mesure de l'espace occupé par un objet.")
+        
+        
+        choice = st.selectbox("Volume : ", dict_convert.keys())
+        volume_input = st.number_input("Quantité :")
+        
+        
+        convert_choice = st.selectbox("Convertir en :", [key for key in dict_convert.keys() if key != choice] ) # moins le choix de l'utilisateur
+
+        
+        st.button("Convertir", on_click=converting()) #, volume_input, convert_choice))
+
+    ### Longueur ###
+
+
+
+
+    ### Poids ###
+    
+    
+
+    ### Vitesse ###
+    # elif conversion_choice == 'Vitesse':
+    #     st.header("Convertisseur de Vitesse")
+    #     st.write("La vitesse est une mesure de la distance parcourue par unité de temps.")
+        
+    #     col1, col2 = st.columns(2)
+        
+    #     with col1:
+    #         st.subheader("Kilomètre par heure vers Mille par heure")
+    #         kph_input = st.number_input("Entrez la vitesse en km/h:", key="kph_to_mph")
+    #         mph_output = kph_input * 0.621371
+    #         st.write(f"{kph_input} km/h = {mph_output} mph")
+            
+    #     with col2:
+    #         st.subheader("Mille par heure vers Kilomètre par heure")
+    #         mph_input = st.number_input("Entrez la vitesse en mph:", key="mph_to_kph")
+    #         kph_output = mph_input / 0.621371
+    #         st.write(f"{mph_input} mph = {kph_output} km/h")

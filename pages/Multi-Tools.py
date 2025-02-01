@@ -9,7 +9,7 @@ VALID_LETTERS = ['A', 'B', 'C', 'E', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R'
 
 st.page_link("Home.py", label="Retour", icon=":material/home:")
 #st.write(st.session_state) # affiche SessionState pour Debug ...
-tab1, tab2, tab3= st.tabs(["List Tools", "Convertion", "Postal_Gen"])
+tab1, tab3= st.tabs(["List Tools", "Postal_Gen"])
 
 def tab_1(): 
     st.header("Deux liste en Une ")
@@ -33,8 +33,8 @@ def tab_1():
             st.error("Même nombre de virgule pour les 2 listes - LA LISTE N'EST PAS CONFORME")
         st.code(list_jointed, language="None", line_numbers=False)
 
-def tab_2():
-    fonctions.tab_2.tab_2()
+# def tab_2():
+#     fonctions.tab_2.tab_2()
 
 def generate_canada_postal():
     """Generate a valid Canadian postal code format: A1A 1A1"""
@@ -95,9 +95,9 @@ with tab1:
     st.title("List Tools")
     tab_1()
 
-with tab2:
-    st.title("Conversion")
-    tab_2()
+# with tab2:
+#     st.title("Conversion")
+#     tab_2()
 
 with tab3:
     st.title("Postal Code Generator")
