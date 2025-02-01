@@ -7,7 +7,7 @@ if "conversion_choice" not in st.session_state:
 st.title("Multi-Converter")
 st.header("Tools de conversion")
 
-conversion_choice = st.selectbox("Choix de la conversion", ['--', 'Morse', 'Alpha', 'Code', 'Volume', 'Distance', 'Surface' ])
+conversion_choice = st.selectbox("Choix de la conversion", ['--',  'Volume', 'Distance', 'Surface', 'Morse', 'Alpha', 'Code', ])
 # , 'Binaire', 'Signe',
 #     'Code', 'Poids', 'Longueur', 'Température',
 #     'Volume', 'Vitesse', 'Pression', 'Energie',
