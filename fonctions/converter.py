@@ -134,7 +134,7 @@ def code():
 # VOLUME #
 ##########
 
-dict_convert = {
+dict_volumes = {
     'Litre': 1,
     'Gallon US': 0.264172,
     'Millilitre': 1000,
@@ -143,23 +143,121 @@ dict_convert = {
     'Quart': 1.05669,
     'Tasse': 4.22675,
     'Cuillère à soupe': 67.628,
-    'Cuillère à thé': 202.884
+    'Cuillère à thé': 202.884,
+    'Mètre cube': 0.001,
+    'Centimètre cube': 1000
 }
 
-def converting(input_val, choice_input, choice_convert):
-    factor_input = dict_convert[choice_input]
-    factor_convert = dict_convert[choice_convert]
+def converting_volume(input_val, choice_input, choice_convert):
+    factor_input = dict_volumes[choice_input]
+    factor_convert = dict_volumes[choice_convert]
     volume_output = input_val / factor_input * factor_convert
     return volume_output
 
 def volume():
     st.header("Convertisseur de Volume")
 
-    choice = st.selectbox("Volume : ", dict_convert.keys())
-    volume_input = st.number_input("Quantité : ")
-    convert_choice = st.selectbox("Convertir en :", 
-                                [key for key in dict_convert.keys() if key != choice])
+    col1, col2 = st.columns(2)
 
-    if st.button("Convertir"):  # Correction du bouton
-        result = converting(volume_input, choice, convert_choice)
-        st.header(f"{volume_input} {choice} = {result:.4f} {convert_choice}")
+    with col1:
+        choice = st.selectbox("Volume d'origine : ", dict_volumes.keys())
+        volume_input = st.number_input("Valeur : ", 
+                                     min_value=0.0,
+                                     help="Entrez le volume à convertir")
+
+    with col2:
+        convert_choice = st.selectbox("Convertir en :", 
+                                    [key for key in dict_volumes.keys() if key != choice])
+
+    if st.button("Convertir"):
+        result = converting_volume(volume_input, choice, convert_choice)
+        
+        if result < 0.0001:
+            st.write(f"{volume_input} {choice} = {result:.8f} {convert_choice}")
+        elif result > 1000000:
+            st.write(f"{volume_input} {choice} = {result:.0f} {convert_choice}")
+        else:
+            st.write(f"{volume_input} {choice} = {result:.4f} {convert_choice}")
+
+
+##############
+# DISTANCES  #
+##############
+
+dict_distances = {
+    'Mile': 0.000621371,
+    'Yard': 1.09361,
+    'Pied': 3.28084,
+    'Pouce': 39.3701,
+    'Mètre': 1,
+    'Kilomètre': 0.001,
+    'Centimètre': 100,
+    'Millimètre': 1000,
+    
+}
+
+def converting_distance(input_val, choice_input, choice_convert):
+    factor_input = dict_distances[choice_input]
+    factor_convert = dict_distances[choice_convert]
+    distance_output = input_val / factor_input * factor_convert
+    return distance_output
+
+def distance():
+    st.header("Convertisseur de Distance")
+
+    choice = st.selectbox("Distance : ", dict_distances.keys())
+    distance_input = st.number_input("Valeur : ", min_value=0.0)
+    convert_choice = st.selectbox("Convertir en :", 
+                                [key for key in dict_distances.keys() if key != choice])
+
+    if st.button("Convertir"):
+        result = converting_distance(distance_input, choice, convert_choice)
+        st.header(f"{distance_input} {choice} = {result:.4f} {convert_choice}")
+
+############
+# SURFACES #
+############
+
+dict_surfaces = {
+    'Mètre carré': 1,
+    'Hectare': 10000,
+    'Are': 100,
+    'Kilomètre carré': 1000000,
+    'Centimètre carré': 0.0001,
+    'Acre': 4046.86,
+    'Pied carré': 0.092903,
+    'Pouce carré': 0.00064516,
+    'Arpent': 3418.93
+}
+
+def converting_surface(input_val, choice_input, choice_convert):
+    # Conversion en mètres carrés
+    surface_in_meters = input_val * dict_surfaces[choice_input]
+    # Conversion vers l'unité cible
+    surface_output = surface_in_meters / dict_surfaces[choice_convert]
+    return surface_output
+
+def surface():
+    st.header("Convertisseur de Surface")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        choice = st.selectbox("Surface d'origine : ", dict_surfaces.keys())
+        surface_input = st.number_input("Valeur : ", 
+                                        min_value=0.0, 
+                                        help="Entrez la valeur à convertir")
+
+    with col2:
+        convert_choice = st.selectbox("Convertir en :", 
+                                        [key for key in dict_surfaces.keys() if key != choice])
+
+    if st.button("Convertir"):
+        result = converting_surface(surface_input, choice, convert_choice)
+
+        if result < 0.0001:
+            st.header(f"{surface_input} {choice} = {result:.8f} {convert_choice}")
+        elif result > 1000000:
+            st.header(f"{surface_input} {choice} = {result:.0f} {convert_choice}")
+        else:
+            st.header(f"{surface_input} {choice} = {result:.4f} {convert_choice}")

@@ -1,13 +1,13 @@
 import streamlit as st
-from fonctions.converter import morse, alpha, code, volume
+from fonctions.converter import morse, alpha, code, volume, distance, surface
 
 if "conversion_choice" not in st.session_state:
     st.session_state.conversion_choice = ""
 
 st.title("Multi-Converter")
-st.write("Tools de conversion")
+st.header("Tools de conversion")
 
-conversion_choice = st.selectbox("Choix de la conversion", ['--', 'Morse', 'Alpha', 'Code', 'Volume' ])
+conversion_choice = st.selectbox("Choix de la conversion", ['--', 'Morse', 'Alpha', 'Code', 'Volume', 'Distance', 'Surface' ])
 # , 'Binaire', 'Signe',
 #     'Code', 'Poids', 'Longueur', 'Température',
 #     'Volume', 'Vitesse', 'Pression', 'Energie',
@@ -27,3 +27,9 @@ if conversion_choice == "Code":
 
 if conversion_choice == "Volume":
     volume()
+
+if conversion_choice == "Distance":
+    distance()
+
+if conversion_choice == "Surface":
+    surface()
