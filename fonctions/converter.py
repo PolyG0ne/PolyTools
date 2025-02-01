@@ -162,4 +162,4 @@ def volume():
 
     if st.button("Convertir"):  # Correction du bouton
         result = converting(volume_input, choice, convert_choice)
-        st.write(f"{volume_input} {choice} = {result:.4f} {convert_choice}")
+        st.header(f"{volume_input} {choice} = {result:.4f} {convert_choice}")
