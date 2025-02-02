@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 import pandas as pd
-import fonctions.tab_2
+#import fonctions.tab_2
 from fonctions.tab_2 import MORSE_CODE, REVERSE_MORSE
 
 VALID_LETTERS = ['A', 'B', 'C', 'E', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'X', 'Y']
