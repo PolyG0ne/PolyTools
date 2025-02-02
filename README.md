@@ -1,4 +1,4 @@
-Frensh will follow : 
+- ReadMe en FR après EN - 
 
 # PolyTools 🛠️
 
