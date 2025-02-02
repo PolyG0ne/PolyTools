@@ -2,7 +2,7 @@
 
 # PolyTools 🛠️
 
-PolyTools is a comprehensive web application suite built with Streamlit, offering various utility tools for different needs. This all-in-one application combines several practical features in a simple and intuitive user interface.
+PolyTools is a comprehensive web application suite built with Streamlit, offering various utility tools for different needs. This all-in-one application combines several practical features in a simple and intuitive user interface. Each page is independent and can be used individually
 
 ## 🌟 Features
 
@@ -109,7 +109,7 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 # PolyTools 🛠️
 
-PolyTools est une suite d'applications web développée avec Streamlit qui offre divers outils utilitaires pour différents besoins. Cette application tout-en-un regroupe plusieurs fonctionnalités pratiques dans une interface utilisateur simple et intuitive.
+PolyTools est une suite d'applications web complète construite avec Streamlit, offrant divers outils utilitaires pour différents besoins. Cette application tout-en-un combine plusieurs fonctionnalités pratiques dans une interface utilisateur simple et intuitive. Chaque page est indépendante et peut être utilisée individuellement.
 
 ## 🌟 Fonctionnalités
 
